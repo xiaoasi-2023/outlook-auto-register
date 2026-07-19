@@ -1,0 +1,12 @@
+# Docker / Linux deployment dependencies.
+# This file intentionally includes requirements.txt plus modules used by the
+# CDP, proxy, dashboard, token and diagnostics paths.
+-r requirements.txt
+-r requirements_cdp.txt
+
+playwright
+aiohttp
+PyYAML
+Pillow
+numpy
+opencv-python-headless

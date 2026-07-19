@@ -1,0 +1,50 @@
+.git
+.github
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local Python envs
+.venv/
+venv/
+env/
+
+# Runtime / secrets / credentials
+.env
+.env.*
+!.env.docker.example
+runtime_outlook/
+docker-data/
+云端注册邮箱/
+自动化定时注册Outlook邮箱/
+实验优化版本/
+**/mihomo_runtime/
+**/xray_runtime/
+**/subscriptions.json
+**/runtime_subscriptions.json
+**/config.yaml
+**/providers/
+*.pem
+*.key
+*.pma
+
+# Large/debug artifacts not required by the image
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

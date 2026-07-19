@@ -1,0 +1,29 @@
+services:
+  outlook-auto-register:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: outlook-auto-register:local
+    init: true
+    shm_size: "1gb"
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      APP_MODE: ${APP_MODE:-dashboard}
+      OUTLOOK_DASHBOARD_PORT: ${OUTLOOK_DASHBOARD_PORT:-8765}
+      PYTHONUNBUFFERED: "1"
+      SUB_PROXY_FAST_START: "1"
+      # Optional: comma-separated subscription URLs. If set, entrypoint writes
+      # docker-data/mihomo_runtime/subscriptions.json on first start.
+      SUBSCRIPTION_URL: ${SUBSCRIPTION_URL:-}
+      # Optional: your private credential repository, e.g.
+      # git@github.com:your-name/cloud-register-email.git
+      CLOUD_REGISTER_EMAIL_REMOTE: ${CLOUD_REGISTER_EMAIL_REMOTE:-}
+    ports:
+      # Bind to localhost by default so the dashboard is not exposed publicly.
+      - "127.0.0.1:${OUTLOOK_DASHBOARD_PORT:-8765}:8765"
+    volumes:
+      - ./docker-data/runtime_outlook:/app/runtime_outlook
+      - ./docker-data/mihomo_runtime:/app/邮箱注册/mihomo_runtime
+      - ./docker-data/xray_runtime:/app/邮箱注册/xray_runtime
+      - ./docker-data/cloud-register-email:/app/云端注册邮箱
+    restart: unless-stopped

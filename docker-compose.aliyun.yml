@@ -1,0 +1,24 @@
+services:
+  outlook-auto-register:
+    image: ${IMAGE_NAME:?please set IMAGE_NAME in .env}
+    container_name: outlook-auto-register
+    init: true
+    shm_size: "${SHM_SIZE:-1gb}"
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      APP_MODE: ${APP_MODE:-dashboard}
+      OUTLOOK_DASHBOARD_PORT: "8765"
+      PYTHONUNBUFFERED: "1"
+      SUB_PROXY_FAST_START: "1"
+      SUBSCRIPTION_URL: ${SUBSCRIPTION_URL:-}
+      CLOUD_REGISTER_EMAIL_REMOTE: ${CLOUD_REGISTER_EMAIL_REMOTE:-}
+    ports:
+      # 默认只绑定本机，配合 Nginx/宝塔反代或 SSH 隧道访问。
+      # 如需公网直连，把 HOST_BIND_ADDR 改成 0.0.0.0。
+      - "${HOST_BIND_ADDR:-127.0.0.1}:${APP_PORT:-8765}:8765"
+    volumes:
+      - ${APP_DATA_DIR:-./docker-data}/runtime_outlook:/app/runtime_outlook
+      - ${APP_DATA_DIR:-./docker-data}/mihomo_runtime:/app/邮箱注册/mihomo_runtime
+      - ${APP_DATA_DIR:-./docker-data}/xray_runtime:/app/邮箱注册/xray_runtime
+      - ${APP_DATA_DIR:-./docker-data}/cloud-register-email:/app/云端注册邮箱
