@@ -16,11 +16,9 @@ env/
 .env
 .env.*
 !.env.docker.example
+!.env.aliyun.example
 runtime_outlook/
 docker-data/
-云端注册邮箱/
-自动化定时注册Outlook邮箱/
-实验优化版本/
 **/mihomo_runtime/
 **/xray_runtime/
 **/subscriptions.json
