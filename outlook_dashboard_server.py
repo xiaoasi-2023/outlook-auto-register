@@ -261,8 +261,16 @@ def proxy_status() -> dict:
     """获取代理总状态"""
     version = _mihomo_get("/version")
     proxies_data = _mihomo_get("/proxies")
+    # 住宅代理存在本地 JSON，与 mihomo 是否运行无关，任何分支都必须返回
+    residential = _load_residential()
     if not proxies_data:
-        return {"running": False, "nodes": 0, "current": "", "subscriptions": _load_subs()}
+        return {
+            "running": False,
+            "nodes": 0,
+            "current": "",
+            "subscriptions": _load_subs(),
+            "residential": residential,
+        }
 
     auto = proxies_data.get("proxies", {}).get("AUTO", {})
     nodes = auto.get("all", [])
@@ -296,7 +304,7 @@ def proxy_status() -> dict:
         "current": auto.get("now", ""),
         "mode": proxies_data.get("mode", auto.get("type", "")),
         "subscriptions": subs,
-        "residential": _load_residential(),
+        "residential": residential,
     }
 
 
@@ -1092,6 +1100,7 @@ function switchTab(name) {
   $('tab-' + name).classList.add('active');
   if (name === 'proxy-nodes') loadNodes();
   if (name === 'proxy-status') loadProxyStatus();
+  if (name === 'proxy-residential') loadResidential();
   if (name === 'xray-kernel') loadXrayStatus();
 }
 
@@ -1469,7 +1478,8 @@ async function renameSub(url, oldName) {
 // ─── 住宅代理 ───
 async function loadResidential() {
   try {
-    const d = await api('/api/proxy/status');
+    // 专用接口直接读本地 JSON，不依赖 mihomo 是否运行
+    const d = await api('/api/proxy/residential');
     renderResList(d.residential || []);
   } catch(e) {}
 }
@@ -1495,7 +1505,9 @@ async function addResidential() {
   try {
     const d = await api('/api/proxy/residential', 'POST', {proxy});
     toast(d.ok ? '✅ ' + d.msg : '❌ ' + d.msg, d.ok ? 'ok' : 'err');
-    if (d.ok) { $('res-proxy').value = ''; loadResidential(); }
+    // 无论新增成功还是“已存在”，都刷新列表，避免后端有数据、前端空白
+    if (d.ok) $('res-proxy').value = '';
+    loadResidential();
   } catch(e) { toast('❌ ' + e, 'err'); }
 }
 
@@ -1505,7 +1517,8 @@ async function bulkAddResidential() {
   try {
     const d = await api('/api/proxy/residential/bulk', 'POST', {text});
     toast(d.ok ? '✅ ' + d.msg : '❌ ' + d.msg, d.ok ? 'ok' : 'err');
-    if (d.ok) { $('res-bulk').value = ''; loadResidential(); }
+    if (d.ok) $('res-bulk').value = '';
+    loadResidential();
   } catch(e) { toast('❌ ' + e, 'err'); }
 }
 
